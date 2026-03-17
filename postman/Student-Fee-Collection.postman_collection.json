@@ -1,0 +1,149 @@
+{
+	"info": {
+		"_postman_id": "student-fee-collection-api",
+		"name": "Student & Fee Collection API",
+		"description": "Postman collection for student-service (port 8081) and fee-service (port 8082). Start student-service first; fee-service calls it for student lookup.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "studentServiceBaseUrl",
+			"value": "http://localhost:8081"
+		},
+		{
+			"key": "feeServiceBaseUrl",
+			"value": "http://localhost:8082"
+		},
+		{
+			"key": "studentId",
+			"value": "STU001"
+		},
+		{
+			"key": "receiptId",
+			"value": ""
+		}
+	],
+	"item": [
+		{
+			"name": "Student Service",
+			"item": [
+				{
+					"name": "Create Student",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"studentId\": \"{{studentId}}\",\n  \"studentName\": \"John Doe\",\n  \"grade\": \"Grade 1\",\n  \"mobileNumber\": \"+971501234567\",\n  \"schoolName\": \"Skiply School of Excellence\"\n}"
+						},
+						"url": {
+							"raw": "{{studentServiceBaseUrl}}/api/students",
+							"host": ["{{studentServiceBaseUrl}}"],
+							"path": ["api", "students"]
+						},
+						"description": "Create a new student. Returns 201 with Location header and student response."
+					}
+				},
+				{
+					"name": "List All Students",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{studentServiceBaseUrl}}/api/students",
+							"host": ["{{studentServiceBaseUrl}}"],
+							"path": ["api", "students"]
+						},
+						"description": "Get all students."
+					}
+				},
+				{
+					"name": "Get Student by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{studentServiceBaseUrl}}/api/students/{{studentId}}",
+							"host": ["{{studentServiceBaseUrl}}"],
+							"path": ["api", "students", "{{studentId}}"]
+						},
+						"description": "Get a single student by studentId."
+					}
+				},
+				{
+					"name": "Get Internal Student (for fee-service)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{studentServiceBaseUrl}}/internal/students/{{studentId}}",
+							"host": ["{{studentServiceBaseUrl}}"],
+							"path": ["internal", "students", "{{studentId}}"]
+						},
+						"description": "Internal lookup used by fee-service when collecting fees. Returns studentId, studentName, grade, schoolName."
+					}
+				}
+			],
+			"description": "Student Service - port 8081"
+		},
+		{
+			"name": "Fee Service",
+			"item": [
+				{
+					"name": "Collect Fee",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"studentId\": \"{{studentId}}\",\n  \"recipientName\": \"Sharafudeen Aboobacker\",\n  \"amountPaid\": 100.50,\n  \"feeType\": \"TUITION\",\n  \"currency\": \"AED\",\n  \"cardNumberMasked\": \"1234-5678-1236-0081\",\n  \"cardType\": \"MasterCard\"\n}"
+						},
+						"url": {
+							"raw": "{{feeServiceBaseUrl}}/api/receipts",
+							"host": ["{{feeServiceBaseUrl}}"],
+							"path": ["api", "receipts"]
+						},
+						"description": "Collect fee for a student. Student must exist in student-service. feeType: TUITION, TRANSPORT, EXAM, OTHER. currency, cardNumberMasked, cardType are optional."
+					}
+				},
+				{
+					"name": "Get Receipt by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{feeServiceBaseUrl}}/api/receipts/{{receiptId}}",
+							"host": ["{{feeServiceBaseUrl}}"],
+							"path": ["api", "receipts", "{{receiptId}}"]
+						},
+						"description": "Get a single receipt by UUID. Set receiptId variable from Collect Fee response."
+					}
+				},
+				{
+					"name": "Get Receipts by Student ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{feeServiceBaseUrl}}/api/receipts/student/{{studentId}}",
+							"host": ["{{feeServiceBaseUrl}}"],
+							"path": ["api", "receipts", "student", "{{studentId}}"]
+						},
+						"description": "Get all receipts for a student, newest first."
+					}
+				}
+			],
+			"description": "Fee Service - port 8082. Requires student-service running on 8081."
+		}
+	]
+}

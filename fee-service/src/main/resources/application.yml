@@ -1,0 +1,40 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: fee-service
+  datasource:
+    url: jdbc:h2:mem:feedb;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+fee-service:
+  student-service:
+    base-url: http://localhost:8081
+  rest:
+    connect-timeout-ms: 2000
+    read-timeout-ms: 3000
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+
+
