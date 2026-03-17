@@ -24,3 +24,22 @@ Port: 8082
 DB: jdbc:h2:mem:feedb
 Console: /h2-console
 Student service base URL (used by REST client):
+
+
+
+
+
+Postman collection
+A ready-made Postman collection and environment are provided:
+
+postman/Student-Fee-Collection.postman_collection.json
+postman/Local.postman_environment.json
+Usage:
+
+Import both files into Postman.
+Select the Local environment.
+Start student-service and fee-service.
+Run requests in this order:
+Create Student
+Collect Fee
+Get Receipt / Get Receipts by Student
